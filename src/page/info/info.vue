@@ -10,10 +10,10 @@
 				<div class="right">
 					<div class="licence-area" @click="handleChangeArea">
 						<span>{{area}}</span>
-						<span><i class="icon iconfont icon-xiala-copy"></i></span> 
+						<span><i class="icon iconfont icon-xiala-copy"></i></span>
 					</div>
 
-					<input type="text" maxlength="6" placeholder="请输入车牌号码" v-model="licenceNumber"> 
+					<input type="text" maxlength="6" placeholder="请输入车牌号码" v-model="licenceNumber">
 				</div>
 			</div>
 			<div class="item">
@@ -36,13 +36,14 @@
 
 		<div class="operate">
 			<ymt-button class="btn-blue" :class="flag || !(licenceNumber && mobile && validateCode) ? 'disabled':''" :disable="flag || !(licenceNumber && mobile && validateCode) "  @click="handleSubmit">我要报价</ymt-button>
+			<ymt-button @click="handleTestBackRN">退出当前webview，返回到rn</ymt-button>
 		</div>
 
 		<ymt-city-area v-if="areaDatas.isShow"
-					:initData="areaDatas" 
+					:initData="areaDatas"
 					@change="handleCityAreaChange"
 					@closeShade="handleCityAreaCloseShade"></ymt-city-area>
-		 
+
 
 	</div>
 </template>
@@ -61,7 +62,7 @@
 
 				fullLicence:null,
 				mobile:null,
-				validateCode:null, 
+				validateCode:null,
 				seconed:60,
 				sendCodeIntervalId:null,
 
@@ -106,26 +107,31 @@
 			}
 		},
 		beforeCreate() {
-			document.title = '车险报价'; 
-		}, 
-		created(){   
+			document.title = '车险报价';
+		},
+		created(){
 			let _this = this;
 
 			try {
 				// 百度地图API功能
-				var map = new BMap.Map("bai_map");  
+				var map = new BMap.Map("bai_map");
 				var geolocation = new BMap.Geolocation();
 				geolocation.getCurrentPosition(function(r){
-					if(this.getStatus() == BMAP_STATUS_SUCCESS){  
+					if(this.getStatus() == BMAP_STATUS_SUCCESS){
 						_this.longitude = r.point.lng;
-						_this.latitude = r.point.lat;  
-					}         
+						_this.latitude = r.point.lat;
+					}
 				},{enableHighAccuracy: true})
-			} catch(ex) { 
-			}  
+			} catch(ex) {
+			}
 		},
 		methods: {
-			handleSubmit() { 
+			handleTestBackRN(options) {
+			$jsc.native.exec();	
+				alert('handleTestBackRN');
+
+			},
+			handleSubmit() {
 
 				if (!this.licenceNumber) {
 					globalVue.$message({msg: '请输入车牌号', duration: 1500});
@@ -151,10 +157,10 @@
 					this.$message({msg:'请输入正确的手机号',duration:1000});
 					return false;
 				}
- 
+
 
 				let parms = {
-					DS:$ParmsHelper.loadPageParms("DS"), 
+					DS:$ParmsHelper.loadPageParms("DS"),
 					BS:$ParmsHelper.loadPageParms("BS"),// || '02',
 					BSN:$ParmsHelper.loadPageParms("BSN"),
 					BSD:$ParmsHelper.loadPageParms("BSD"),
@@ -164,11 +170,11 @@
 					validCode:this.validateCode,
 					insuranceCode:'CPIC', // CPIC 中国太平洋财产保险股份有限公司
 					gps:{lon:this.longitude,lat:this.latitude}
-				}; 
+				};
 
 				this.flag = true;
 
-				api.applyQuote(parms).then(result => { 
+				api.applyQuote(parms).then(result => {
 					this.flag = false;
 					if (result.errorCode == "0") {
 						this.$router.push({path:'/success'})
@@ -177,11 +183,11 @@
 						globalVue.$message({msg: $MessageHelper.toMsg(result), duration: 1500});
 					}
 				});
- 
-				
+
+
 			},
 			hidePlaceHolder() {
-				console.log('hidePlaceHolder'); 
+				console.log('hidePlaceHolder');
 			},
 			handleRemoveMobile() {
 				console.log('handleRemoveMobile');
@@ -192,18 +198,18 @@
 				if (!reg.checkMobile(this.mobile)) {
 					return this.$message({msg:'请输入正确的手机号',duration:1000});
 				}
-				let _this = this; 
-				
+				let _this = this;
+
 				if (!this.mobile) {
 					globalVue.$message({msg: '请输入手机号',duration: 1500});
 					return;
 				}
-				
-				api.getValidCode({phone:this.mobile}).then(result => { 
-					 
+
+				api.getValidCode({phone:this.mobile}).then(result => {
+
 					if (result.errorCode != "0") {
 						globalVue.$message({
-			                msg: $MessageHelper.toMsg(result),  
+			                msg: $MessageHelper.toMsg(result),
 			                duration: 1500
 			            });
 					}
@@ -223,27 +229,27 @@
 			},
 			handleLicenceNumberKeyup(e) {
 				// console.log('handleLicenceNumberKeyDown')
-				let target = e.target || e.srcElement; 
+				let target = e.target || e.srcElement;
 				let temp = target.value;
-				this.licenceNumber = temp; 
+				this.licenceNumber = temp;
 
-				let reg = /[a-zA-Z0-9]/;  				 
+				let reg = /[a-zA-Z0-9]/;
 				let tempArray = Array.from(temp);
 			 	// debugger
 				if (tempArray.length > 0) {
-					tempArray.forEach((c)=>{ 
+					tempArray.forEach((c)=>{
 						if (!reg.test(c)) this.licenceNumber = this.licenceNumber.replace(c,'');
 					});
 				}
-				this.licenceNumber = this.licenceNumber.toUpperCase(); 
+				this.licenceNumber = this.licenceNumber.toUpperCase();
 
 				// if (this.carInfo.carLicenseNumber.length > 7) this.carInfo.carLicenseNumber = this.carInfo.carLicenseNumber.substring(0,7);
 			},
 
-			handleChangeArea() { 
+			handleChangeArea() {
 				this.areaDatas.isShow = true;
 			},
-			handleCityAreaChange(item) { 
+			handleCityAreaChange(item) {
 				this.area = item.key;
 				this.areaDatas.data.find(d=>d.isDefault).isDefault = false;
 				this.areaDatas.data.find(d=>d.key == item.key).isDefault = true;
@@ -260,6 +266,6 @@
 			licenceNumber:function(curVal){
 				this.licenceNumber = this.licenceNumber.toUpperCase();
 			}
-		} 
+		}
 	}
 </script>
