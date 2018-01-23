@@ -107,28 +107,26 @@
 			}
 		},
 		beforeCreate() {
-			document.title = '车险报价';
+			document.title = '车险报价1';
 		},
 		created(){
 			let _this = this;
-
-			try {
-				// 百度地图API功能
-				var map = new BMap.Map("bai_map");
-				var geolocation = new BMap.Geolocation();
-				geolocation.getCurrentPosition(function(r){
-					if(this.getStatus() == BMAP_STATUS_SUCCESS){
-						_this.longitude = r.point.lng;
-						_this.latitude = r.point.lat;
-					}
-				},{enableHighAccuracy: true})
-			} catch(ex) {
-			}
+			// try {
+			// 	// 百度地图API功能
+			// 	var map = new BMap.Map("bai_map");
+			// 	var geolocation = new BMap.Geolocation();
+			// 	geolocation.getCurrentPosition(function(r){
+			// 		if(this.getStatus() == BMAP_STATUS_SUCCESS){
+			// 			_this.longitude = r.point.lng;
+			// 			_this.latitude = r.point.lat;
+			// 		}
+			// 	},{enableHighAccuracy: true})
+			// } catch(ex) {
+			// }
 		},
 		methods: {
 			handleTestBackRN(options) {
-			$jsc.native.exec();	
-				alert('handleTestBackRN');
+			  $jsc.native.exec();
 
 			},
 			handleSubmit() {
