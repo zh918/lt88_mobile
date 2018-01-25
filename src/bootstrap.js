@@ -59,7 +59,6 @@ export default class Bootstrap {
       //   cb();
       // })
 
-     
       // 第三种方式
       document.addEventListener('RNJSBridgeReady',()=>{
 
